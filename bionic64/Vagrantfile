@@ -13,6 +13,7 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
 		config.vm.box = "ubuntu/bionic64"
+		config.ssh.forward_agent = true
 		config.vm.provision "docker"
 		config.vm.provision "file", source: "provision/copy/home/vagrant", destination: "/home/vagrant"
 		#
