@@ -12,30 +12,29 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-	config.vm.box = "ubuntu/bionic64"
-	config.vm.provision "docker"
-	config.vm.provision "file", source: "provision/copy/home/vagrant", destination: "/home/vagrant"
-	
-	#if File.exists?(File.expand_path("~"))  
-	#	puts 'yup'
-	#else
-	#	puts 'nope'
-	#end
-
-	if File.exists?(File.expand_path("~/.gitconfig"))
-		config.vm.provision "file", source: File.expand_path("~/.gitconfig"), destination: "~/.gitconfig"
-	else
-		puts 'nope'
-	end
-	
-	if File.exists?(File.expand_path("~/.git-credentials"))
-		config.vm.provision "file", source: File.expand_path("~/.git-credentials"), destination: "~/.git-credentials"
-	else
-		puts 'nope'
-	end
-	
-	config.vm.provision "shell", path: "provision/shell/force.bash.color.sh"
-	
+		config.vm.box = "ubuntu/bionic64"
+		config.vm.provision "docker"
+		config.vm.provision "file", source: "provision/copy/home/vagrant", destination: "/home/vagrant"
+		#
+		if File.exists?(File.expand_path("~/.gitconfig"))
+			config.vm.provision "file", source: File.expand_path("~/.gitconfig"), destination: "~/.gitconfig"
+		else
+			puts 'nope'
+		end
+		#
+		if File.exists?(File.expand_path("~/.git-credentials"))
+			config.vm.provision "file", source: File.expand_path("~/.git-credentials"), destination: "~/.git-credentials"
+		else
+			puts 'nope'
+		end
+		#
+		config.vm.provision "shell", path: "provision/shell/force.bash.color.sh"
+		#
+		#
+		#
+		#Marvell Yukon 88E8001/8003/8010 PCI Gigabit Ethernet Controller
+		config.vm.network :public_network, ip: "192.168.1.12"
+		#
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
