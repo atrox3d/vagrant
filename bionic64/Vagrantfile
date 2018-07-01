@@ -19,13 +19,13 @@ Vagrant.configure("2") do |config|
 		if File.exists?(File.expand_path("~/.gitconfig"))
 			config.vm.provision "file", source: File.expand_path("~/.gitconfig"), destination: "~/.gitconfig"
 		else
-			puts 'nope'
+			puts '~/.gitconfig not found'
 		end
 		#
 		if File.exists?(File.expand_path("~/.git-credentials"))
 			config.vm.provision "file", source: File.expand_path("~/.git-credentials"), destination: "~/.git-credentials"
 		else
-			puts 'nope'
+			puts '~/.git-credentials not found'
 		end
 		#
 		config.vm.provision "shell", path: "provision/shell/force.bash.color.sh"
@@ -39,19 +39,28 @@ Vagrant.configure("2") do |config|
 		#
 		#
 		$script = <<-SCRIPT
-		echo I am provisioning...
-		echo checking nfs-common
-		dpkg -l | grep nfs-common && {
-			echo nfs-common already installed
-		} || {
-			echo installing nfs-common
-			apt install -y nfs-common
-		}
+			echo I am provisioning...
+			echo checking nfs-common
+			dpkg -l | grep nfs-common && {
+				echo nfs-common already installed
+			} || {
+				echo installing nfs-common
+				apt install -y nfs-common
+			}
 		SCRIPT
         #
 		#Vagrant.configure("2") do |config|
 		config.vm.provision "shell", inline: $script
 		#end
+		#
+		# private mount
+		#
+		if File.exists?(".provision/shell/mount.sh")
+			config.vm.provision "shell", path: ".provision/shell/mount.sh"
+		else
+			puts '.provision/shell/mount.sh not found'
+		end
+		#
 
 
 
