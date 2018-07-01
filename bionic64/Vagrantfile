@@ -17,32 +17,35 @@ Vagrant.configure("2") do |config|
 		config.vm.provision "file", source: "provision/copy/home/vagrant", destination: "/home/vagrant"
 		#
 		if File.exists?(File.expand_path("~/.gitconfig"))
+			puts '~/.gitconfig found, copying on vm'
 			config.vm.provision "file", source: File.expand_path("~/.gitconfig"), destination: "~/.gitconfig"
 		else
-			puts '~/.gitconfig not found'
+			puts '~/.gitconfig not foundm skipping'
 		end
 		#
 		if File.exists?(File.expand_path("~/.git-credentials"))
+			puts '~/.git-credentials found, copying on vm'
 			config.vm.provision "file", source: File.expand_path("~/.git-credentials"), destination: "~/.git-credentials"
 		else
-			puts '~/.git-credentials not found'
+			puts '~/.git-credentials not found, skipping'
 		end
 		#
+		puts 'executing provision/shell/force.bash.color.sh...'
 		config.vm.provision "shell", path: "provision/shell/force.bash.color.sh"
 		#
 		#
 		#
 		#Marvell Yukon 88E8001/8003/8010 PCI Gigabit Ethernet Controller
+		puts 'setting public network ip: 192.168.1.12...'
 		config.vm.network :public_network, ip: "192.168.1.12"
 		#
 		#
 		#
 		#
 		$script = <<-SCRIPT
-			echo I am provisioning...
-			echo checking nfs-common
+			echo inline shell: checking nfs-common...
 			dpkg -l | grep nfs-common && {
-				echo nfs-common already installed
+				echo nfs-common already installed, skipping
 			} || {
 				echo installing nfs-common
 				apt install -y nfs-common
@@ -56,6 +59,7 @@ Vagrant.configure("2") do |config|
 		# private mount
 		#
 		if File.exists?(".provision/shell/mount.sh")
+			puts '.provision/shell/mount.sh found, executing...'
 			config.vm.provision "shell", path: ".provision/shell/mount.sh"
 		else
 			puts '.provision/shell/mount.sh not found'
