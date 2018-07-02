@@ -115,11 +115,13 @@ Vagrant.configure("2") do |config|
 							then
 								echo appending key
 								cat "$k" >> ~vagrant/.ssh/authorized_keys
-								cat ~vagrant/.ssh/authorized_keys
 							else
 								echo key already appended
 							fi
 						done
+						echo ----------------------------------------------------------------
+						cat ~vagrant/.ssh/authorized_keys
+						echo ----------------------------------------------------------------
 					fi
 				SCRIPT
 				config.vm.provision "shell", inline: $script
