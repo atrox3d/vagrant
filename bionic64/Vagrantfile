@@ -33,6 +33,22 @@ Vagrant.configure("2") do |config|
 		#
 		#
 		#
+		$script = <<-SCRIPT
+			echo inline shell: checking docker-compose...
+			dpkg -l | grep docker-compose && {
+				echo docker-compose already installed, skipping
+			} || {
+				echo installing docker-compose
+				apt install -y docker-compose
+			}
+		SCRIPT
+		config.vm.provision "shell", inline: $script
+		#
+		#
+		#
+		#
+		#
+		#
 		config.vm.provision "file", source: "provision/copy/home/vagrant", destination: "/home/vagrant"
 		#
 		#
