@@ -6,13 +6,24 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 
-def log(_config, message)
+
+
+def log(_config, *messages )
 	_config.vm.provision "shell", privileged: false, inline: <<-LOG
-		echo "#{message}"
+		_messages=()
+		#{
+			messages.each do |message|
+				"_messages+=( \"#{message}\" )"
+			end
+		}
+		echo	'##################################################################'
+		for _message in "${_messages[@]}"
+		do
+			echo "$_message"
+		done
+		echo	'##################################################################'
 	LOG
 end
-
-
 
 Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
@@ -27,7 +38,7 @@ Vagrant.configure("2") do |config|
 		#
 		#
 		#
-		log config, "CONFIGURE NETWORK"
+		log config , "CONFIGURE NETWORK", "test new line"
 
 		if File.exists?(".provision/vm/network.ip")
 			ip = File.read(".provision/vm/network.ip").chomp
