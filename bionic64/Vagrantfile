@@ -10,13 +10,12 @@
 
 def log(_config, *messages )
 	_config.vm.provision "shell", privileged: false, inline: <<-LOG
-		_messages=()
-		#{
-			messages.each do |message|
-				"_messages+=( \"#{message}\" )"
-			end
-		}
+		#echo '_messages=( #{messages.map{|m| "\"#{m}\""}.join(', ')} )'
+		_messages=( #{messages.map{|m| "\"#{m}\""}.join(', ')} )
 		echo	'##################################################################'
+		#echo
+		#echo "_messages ------> ${_messages[@]}"
+		#echo
 		for _message in "${_messages[@]}"
 		do
 			echo "$_message"
@@ -38,8 +37,8 @@ Vagrant.configure("2") do |config|
 		#
 		#
 		#
-		log config , "CONFIGURE NETWORK", "test new line"
-
+		log config , "CONFIGURE NETWORK", "test new line", "test test test", "oh, so much test"
+		#
 		if File.exists?(".provision/vm/network.ip")
 			ip = File.read(".provision/vm/network.ip").chomp
 			
