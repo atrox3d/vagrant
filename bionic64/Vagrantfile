@@ -10,12 +10,8 @@
 
 def log(_config, *messages )
 	_config.vm.provision "shell", privileged: false, inline: <<-LOG
-		#echo '_messages=( #{messages.map{|m| "\"#{m}\""}.join(', ')} )'
 		_messages=( #{messages.map{|m| "\"#{m}\""}.join(', ')} )
 		echo	'##################################################################'
-		#echo
-		#echo "_messages ------> ${_messages[@]}"
-		#echo
 		for _message in "${_messages[@]}"
 		do
 			echo "$_message"
@@ -37,24 +33,21 @@ Vagrant.configure("2") do |config|
 		#
 		#
 		#
-		log config , "CONFIGURE NETWORK", "test new line", "test test test", "oh, so much test"
 		#
 		if File.exists?(".provision/vm/network.ip")
 			ip = File.read(".provision/vm/network.ip").chomp
-			
-			config.vm.provision "shell", privileged: false, inline: <<-ECHO
-				echo "--> found .provision/vm/network.ip"
-				echo "ip=#{ip}"
-			ECHO
+			log config, "CONFIGURE NETWORK", "--> found .provision/vm/network.ip", "ip=#{ip}"
 			config.vm.network :public_network, ip: ip
 		end
 		#
 		#
 		#
+		log config, "INSTALL DOCKER"
 		config.vm.provision "docker"
 		#
 		#
 		#
+		log config, "INSTALL DOCKER-COMPOSE"
 		$script = <<-SCRIPT
 			echo inline shell: checking docker-compose...
 			dpkg -l | grep docker-compose && {
@@ -71,43 +64,35 @@ Vagrant.configure("2") do |config|
 		#
 		#
 		#
+		log config, "CUSTOMIZE HOME/VAGRANT"
 		config.vm.provision "file", source: "provision/copy/home/vagrant", destination: "/home/vagrant"
 		#
 		#
 		#
 		if File.exists?(File.expand_path("~/.gitconfig"))
-			config.vm.provision "shell", privileged: false, inline: <<-ECHO
-				echo '~/.gitconfig found, copying on vm'
-			ECHO
+			log config , '~/.gitconfig found, copying on vm'
 			config.vm.provision "file", source: File.expand_path("~/.gitconfig"), destination: "~/.gitconfig"
 		else
-			config.vm.provision "shell", privileged: false, inline: <<-ECHO
-				echo '~/.gitconfig not found skipping'
-			ECHO
+			log config, '~/.gitconfig not found skipping'
 		end
 		#
 		#
 		#
 		if File.exists?(File.expand_path("~/.git-credentials"))
-			config.vm.provision "shell", privileged: false, inline: <<-ECHO
-				echo '~/.git-credentials found, copying on vm'
-			ECHO
+			log config, '~/.git-credentials found, copying on vm'
 			config.vm.provision "file", source: File.expand_path("~/.git-credentials"), destination: "~/.git-credentials"
 		else
-			config.vm.provision "shell", privileged: false, inline: <<-ECHO
-				echo '~/.git-credentials not found, skipping'
-			ECHO
+			log config, '~/.git-credentials not found, skipping'
 		end
 		#
 		#
 		#
-		config.vm.provision "shell", privileged: false, inline: <<-ECHO
-			echo 'executing provision/shell/force.bash.color.sh...'
-		ECHO
+		log config, 'executing provision/shell/force.bash.color.sh...'
 		config.vm.provision "shell", path: "provision/shell/force.bash.color.sh"
 		#
 		#
 		#
+		log config, "INSTALL NFS_COMMON"
 		$script = <<-SCRIPT
 			echo inline shell: checking nfs-common...
 			dpkg -l | grep nfs-common && {
@@ -130,14 +115,10 @@ Vagrant.configure("2") do |config|
 		#
 		#
 		if File.exists?(".provision/shell/mount.sh")
-			config.vm.provision "shell", privileged: false, inline: <<-ECHO
-				echo '.provision/shell/mount.sh found, executing...'
-			ECHO
+			log config, '.provision/shell/mount.sh found, executing...'
 			config.vm.provision "shell", path: ".provision/shell/mount.sh"
 		else
-			config.vm.provision "shell", privileged: false, inline: <<-ECHO
-				echo '.provision/shell/mount.sh not found'
-			ECHO
+			log config, '.provision/shell/mount.sh not found'
 		end
 		#
 		#	https://stackoverflow.com/questions/13453287/check-if-a-file-exists-using-a-wildcard
@@ -146,9 +127,7 @@ Vagrant.configure("2") do |config|
 		#	https://alvinalexander.com/blog/post/ruby/ruby-how-process-each-file-directory-name-pattern
 		#	Dir.glob("*.WMA") {|filename|
 		#
-		config.vm.provision "shell", privileged: false, inline: <<-ECHO
-			echo 'check for ssh public keys...'
-		ECHO
+		log config, 'check for ssh public keys...'
 		if !Dir.glob('.provision/copy/home/vagrant/.ssh/*').empty?
 			#Dir.glob('.provision/copy/home/vagrant/.ssh/*') {|file|
 			#	puts "--> found #{file}"
@@ -181,9 +160,7 @@ Vagrant.configure("2") do |config|
 				config.vm.provision "shell", inline: $script
 			#}		
 		else
-			config.vm.provision "shell", privileged: false, inline: <<-ECHO
-				echo 'no keys found'
-			ECHO
+			log config, 'no keys found'
 		end
 		#
 		#
