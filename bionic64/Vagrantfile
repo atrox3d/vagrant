@@ -108,6 +108,13 @@ Vagrant.configure("2") do |config|
 		#
 		#
 		#
+		Dir.glob('provision/install/*.sh') do |item|
+			log config, "installazione di #{item}"
+			config.vm.provision "shell", path: item
+		end
+		#
+		#
+		#
 		########################################################################
 		#
 		# private provisioning
@@ -163,6 +170,13 @@ Vagrant.configure("2") do |config|
 			#}		
 		else
 			log config, 'no keys found'
+		end
+		#
+		#
+		#
+		Dir.glob('.provision/install/*.sh') do |item|
+			log config, "installazione di #{item}"
+			config.vm.provision "shell", path: item
 		end
 		#
 		#
