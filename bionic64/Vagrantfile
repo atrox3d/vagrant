@@ -7,11 +7,11 @@
 # you're doing.
 
 def banner(_config, message )
-	_config.vm.provision "shell", privileged: false, inline: <<-BANNER
+	_config.vm.provision "shell", privileged: true, inline: <<-BANNER
 		dpkg -l | grep -q sysvbanner || apt install -y sysvbanner
 		echo	'################################################################################'
 		echo
-		banner #{message}
+		which banner > /dev/null 2>&1 && banner #{message} || echo #{message}
 		echo
 		echo	'################################################################################'
 	BANNER
